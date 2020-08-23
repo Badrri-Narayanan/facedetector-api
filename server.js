@@ -28,6 +28,6 @@ app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, db)});
 app.put('/image', (req, res) => { image.handleImage(req, res, db)});
 app.post('/imageurl', (req, res) => { image.handleApi(req, res, db)});
 
-app.listen(9999, () => {
-	console.log("Server is online");
+app.listen(process.env.PORT, () => {
+	console.log(`Server is online and is running on PORT ${process.env.PORT}`);
 });

@@ -11,10 +11,8 @@ const profile = require('./controllers/profile');
 const db = knex({
   client: 'postgres',
   connection: {
-    host : '127.0.0.1',
-    user : 'postgres',
-    password : 'lithium123',
-    database : 'face_detector_db'
+    connectionString : process.env.DATABASE_URL,
+    ssl: true,
   }
 });
 
@@ -22,6 +20,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {res.send('The server is running')});
 app.post('/signin', (req, res) => { signin.handleSignIn(req, res, db, bcrypt)});
 app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt)});
 app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, db)});

@@ -1,0 +1,12 @@
+version: '3.3'
+
+services:
+  face-detector-api:
+    container_name: backend
+    build: ./
+    command: bash -c "npm install;npm start"
+    ports:
+      - "3004:3004"
+    volumes:
+      - "./:/usr/src/face-detector-api"
+    working_dir: /usr/src/face-detector-api

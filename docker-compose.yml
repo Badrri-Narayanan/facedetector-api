@@ -2,11 +2,27 @@ version: '3.3'
 
 services:
   face-detector-api:
+    # env_file:
+    #   - ./.private/api-keys.env "Another way to insert env variables" 
     container_name: backend
     build: ./
-    command: bash -c "npm install;npm start"
+    volumes:
+      - ./:/usr/src/face-detector-api
+    command: npm start
+    working_dir: /usr/src/face-detector-api
+    environment:
+      POSTGRES_URI: postgres:/badrri:secret@postgres:5432/face-detector-db
+    links:
+      - postgres
     ports:
       - "3004:3004"
-    volumes:
-      - "./:/usr/src/face-detector-api"
-    working_dir: /usr/src/face-detector-api
+  # Postgres database
+  postgres:
+    build: ./postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: badrri
+      POSTGRES_PASSWORD: secret123
+      POSTGRES_DB: face-detector-db
+      POSTGRES_HOST: postgres

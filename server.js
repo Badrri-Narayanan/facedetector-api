@@ -10,12 +10,9 @@ const image = require('./controllers/image');
 const profile = require('./controllers/profile');
 
 const db = knex({
-  client: 'postgres',
+  client: 'pg',
   connection: {
-    connectionString : process.env.DATABASE_URL,
-    ssl: {
-    rejectUnauthorized: false
-	}
+    connectionString : process.env.POSTGRES_URI,
   }
 });
 
@@ -24,7 +21,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('combined'));
 
-app.get('/', (req, res) => {res.send('The server is running and ready')});
+app.get('/', (req, res) => {res.send('The server is running.')});
 app.post('/signin', (req, res) => { signin.handleSignIn(req, res, db, bcrypt)});
 app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt)});
 app.get('/profile/:id', (req, res) => { profile.handleProfile(req, res, db)});

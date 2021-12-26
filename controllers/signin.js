@@ -19,7 +19,10 @@ const handleSignIn = (req, res, db, bcrypt) => {
 			 res.status(400).json('invalid credentials');
 		 }
 	 })
-	 .catch(err => res.status(400).json('invalid credentials'));
+	 .catch(err => {
+		 console.log(err);
+		 res.status(400).json('invalid credentials')
+	 });
 }
 
 module.exports = {

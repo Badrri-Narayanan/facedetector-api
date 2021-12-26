@@ -11,7 +11,7 @@ services:
     command: npm start
     working_dir: /usr/src/face-detector-api
     environment:
-      POSTGRES_URI: postgres:/badrri:secret@postgres:5432/face-detector-db
+      POSTGRES_URI: postgres://badrri:secret123@postgres:5432/face-detector-db
     links:
       - postgres
     ports:

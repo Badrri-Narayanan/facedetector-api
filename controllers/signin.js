@@ -1,12 +1,4 @@
 const jwt = require('jsonwebtoken');
-const redis = require('redis');
-
-const redisClient = redis.createClient({
-	url: process.env.REDIS_URI
-});
-
-redisClient.on('error', (err) => console.log('Redis Client Error', err));
-redisClient.connect();
 
 const handleSignIn = (db, bcrypt, req, res) => {
 	const{email, password} = req.body;
@@ -33,38 +25,35 @@ const handleSignIn = (db, bcrypt, req, res) => {
 	 });
 }
 
-const getAuthTokenId = async(req, res) => {
+const getAuthTokenId = (req, res) => {
 	const { authorization } = req.headers;
-	const id = await redisClient.get(authorization);
-	if(!id) {
-		return await res.status(400).json("Unauthorized");
-	}
-	return await res.json({id});
+	let id = -1;
+	try {
+         let decoded_value = jwt.verify(authorization, process.env.JWT_SECRET);
+        console.log("decoded value = " + decoded_value);
+		id = decoded_value.id;
+    } catch(err) {
+        console.error("authoriztion unsuccessful " + err)
+        return res.status(401).json('Unauthorized');
+    }
+
+	return res.json({id});
 }
 
-const signToken = (email) => {
-	const jwtPayload = { email };
-	return jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '2 days' });
-}
-
-const setToken = (key, value) => {
-	return Promise.resolve(redisClient.set(key, value, {
-		EX: 60 * 10,
-		NX: true
-	}))
+const signToken = (id) => {
+	const jwtPayload = { id };
+	return jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '60000' });
 }
 
 const createSessions = (user) => {
-	const {email, id} = user;
-	const token = signToken(email);
+	const {id} = user;
+	const token = signToken(id);
 	
-	return setToken(token, id)
-		.then(() => ({
-			success: "true",
-			userId: id,
-			token,
-		}))
-		.catch(console.log)
+	return {
+		success: "true",
+		userId: id,
+		token,
+	}
 }
 
 const signInAuthentication = (db, bcrypt) => (req, res) => {
@@ -83,5 +72,4 @@ const signInAuthentication = (db, bcrypt) => (req, res) => {
 module.exports = {
 	handleSignIn: handleSignIn,
 	signInAuthentication,
-	redisClient,
 };

@@ -1,4 +1,4 @@
-const redisClient = require('./signin').redisClient;
+const jwt = require('jsonwebtoken');
 
 const requireAuth = async(req, res, next) => {
     const { authorization } = req.headers;
@@ -6,9 +6,12 @@ const requireAuth = async(req, res, next) => {
         console.log("authoriztion unsuccessful")
         return res.status(401).json('Unauthorized');
     }
-    let id = await redisClient.get(authorization);
-    if(!id) {
-        console.log("authoriztion unsuccessful")
+
+    try {
+        let decoded = jwt.verify(authorization, process.env.JWT_SECRET);
+        console.log("decoded id value = " + decoded.id);
+    } catch(err) {
+        console.error("authoriztion unsuccessful " + err)
         return res.status(401).json('Unauthorized');
     }
     console.log("authoriztion successful")

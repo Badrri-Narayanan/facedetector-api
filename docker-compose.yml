@@ -11,9 +11,8 @@ services:
     command: bash -c "rm -rf node_modules/; npm install; npm start"
     working_dir: /usr/src/face-detector-api
     environment:
-      POSTGRES_URI: postgres://badrri:secret123@postgres:5432/face-detector-db
+      DATABASE_URL: postgres://badrri:secret123@postgres:5432/face-detector-db
       JWT_SECRET: '06c219e5bc8378f3a8a3f83b4b7e4649'
-      REDIS_URI: redis://redis:6379
     links:
       - postgres
     ports:
@@ -28,8 +27,3 @@ services:
       POSTGRES_PASSWORD: secret123
       POSTGRES_DB: face-detector-db
       POSTGRES_HOST: postgres
-  # Redis
-  redis:
-    image: redis
-    ports:
-      - "6379:6379"

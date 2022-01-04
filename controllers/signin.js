@@ -29,8 +29,7 @@ const getAuthTokenId = (req, res) => {
 	const { authorization } = req.headers;
 	let id = -1;
 	try {
-         let decoded_value = jwt.verify(authorization, process.env.JWT_SECRET);
-        console.log("decoded value = " + decoded_value);
+        let decoded_value = jwt.verify(authorization, process.env.JWT_SECRET);
 		id = decoded_value.id;
     } catch(err) {
         console.error("authoriztion unsuccessful " + err)
@@ -49,8 +48,6 @@ const createSessions = (user) => {
 	const {id} = user;
 	const token = signToken(id);
 
-	console.log("session created. token = " + token + " with key " + process.env.JWT_SECRET)
-	
 	return {
 		success: "true",
 		userId: id,
@@ -60,7 +57,7 @@ const createSessions = (user) => {
 
 const signInAuthentication = (db, bcrypt) => (req, res) => {
 	const { authorization } = req.headers;
-	console.log("token = " + authorization)
+	
 	return authorization 
 		? getAuthTokenId(req, res) 
 		: handleSignIn(db, bcrypt, req, res)

@@ -8,13 +8,11 @@ const requireAuth = async(req, res, next) => {
     }
 
     try {
-        let decoded = jwt.verify(authorization, process.env.JWT_SECRET);
-        console.log("decoded id value = " + decoded.id);
+        jwt.verify(authorization, process.env.JWT_SECRET);
     } catch(err) {
         console.error("authoriztion unsuccessful " + err)
         return res.status(401).json('Unauthorized');
     }
-    console.log("authoriztion successful")
     return next();
 }
 

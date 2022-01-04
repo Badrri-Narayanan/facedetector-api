@@ -42,12 +42,14 @@ const getAuthTokenId = (req, res) => {
 
 const signToken = (id) => {
 	const jwtPayload = { id };
-	return jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '60000' });
+	return jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '600000' });
 }
 
 const createSessions = (user) => {
 	const {id} = user;
 	const token = signToken(id);
+
+	console.log("session created. token = " + token + " with key " + process.env.JWT_SECRET)
 	
 	return {
 		success: "true",
@@ -58,7 +60,7 @@ const createSessions = (user) => {
 
 const signInAuthentication = (db, bcrypt) => (req, res) => {
 	const { authorization } = req.headers;
-	console.log(authorization)
+	console.log("token = " + authorization)
 	return authorization 
 		? getAuthTokenId(req, res) 
 		: handleSignIn(db, bcrypt, req, res)

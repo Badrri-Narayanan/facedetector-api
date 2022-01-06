@@ -25,7 +25,26 @@ const handleSignIn = (db, bcrypt, req, res) => {
 	 });
 }
 
-const getAuthTokenId = (req, res) => {
+const retrieveUserProfile = (id, db, res) => {
+	let userInfo;
+	db.select('*').from('users')
+	 .where({ id: id})
+	 .then(user => {
+		 if(user.length) {
+			userInfo = user[0];
+			return res.json({
+				id,
+				userInfo,
+			})
+		 } else {
+			 return res.status(400).json('Not Found');
+		 }
+	}).catch( err => {
+		return res.status(400).json('error not found');
+	});
+}
+
+const getAuthTokenId = async (db, req, res) => {
 	const { authorization } = req.headers;
 	let id = -1;
 	try {
@@ -36,7 +55,7 @@ const getAuthTokenId = (req, res) => {
         return res.status(401).json('Unauthorized');
     }
 
-	return res.json({id});
+	retrieveUserProfile(id, db, res);
 }
 
 const signToken = (id) => {
@@ -44,14 +63,15 @@ const signToken = (id) => {
 	return jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '600000' });
 }
 
-const createSessions = (user) => {
-	const {id} = user;
+const createSessions = (userData) => {
+	const {id} = userData;
 	const token = signToken(id);
 
 	return {
 		success: "true",
 		userId: id,
 		token,
+		userInfo: userData,
 	}
 }
 
@@ -59,7 +79,7 @@ const signInAuthentication = (db, bcrypt) => (req, res) => {
 	const { authorization } = req.headers;
 	
 	return authorization 
-		? getAuthTokenId(req, res) 
+		? getAuthTokenId(db, req, res) 
 		: handleSignIn(db, bcrypt, req, res)
 			.then(data => {
 				return data.id && data.email ? createSessions(data) : Promise.reject(data);

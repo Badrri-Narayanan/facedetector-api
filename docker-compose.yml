@@ -8,11 +8,12 @@ services:
     build: ./
     volumes:
       - ./:/usr/src/face-detector-api
-    command: bash -c "rm -rf node_modules/; npm install; npm start"
+    command: bash -c "npm install; npm start"
     working_dir: /usr/src/face-detector-api
     environment:
       DATABASE_URL: postgres://badrri:secret123@postgres:5432/face-detector-db
       JWT_SECRET: '06c219e5bc8378f3a8a3f83b4b7e4649'
+      CLARIFAI_KEY: 'aeef41b4f66148b0bf0c9f16f619f266'
     links:
       - postgres
     ports:
